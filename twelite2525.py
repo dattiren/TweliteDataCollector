@@ -1,9 +1,13 @@
 from __future__ import print_function
 import csv
+import pprint
+
 import serial
 from time import sleep
 import time
 from datetime import datetime
+
+from pymongo import MongoClient
 
 devices = '/dev/ttyUSB0'
 ser = serial.Serial(devices, 115200)
@@ -23,6 +27,14 @@ while True:
                 value = value.replace(list[i], '')
             (nil, nil2,  rc, lq, ct, ed, num, ba, a1, a2, x, y, z) = value.split(":")
             ts = round(time.time() - start, 2)
+
+            #connect mongoDB
+            client = MongoClient('192.168.1.252', 27017)
+            db = client['twelite2525']
+            collection = db['twelite2525_data']
+            mongoData = {'ts': ts, 'lqi': lq, 'battery': ba, 'accelerator': {'x': x, 'y': y, 'z': z}}
+            collection.insert_one(mongoData)
+
             a = [ts, lq, ba, x, y, z]
             writer.writerow(a)
            # (nil, ts, nil2, lq, ct, ed, ba, mn, nil3, a1, a2i, p, x, y, z, nil4) = value.split(";")
