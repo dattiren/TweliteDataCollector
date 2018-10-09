@@ -4,7 +4,9 @@ def calc_mean(data):
     mean = sum(data) / len(data)
     return mean
 
+# 移動平均(moving average)
 def calc_maverage(data):
+    # データ5つごとの移動平均
     a = np.ones(5)/5.0
     maverage = np.convolve(data, a, mode='same')
     return maverage
